@@ -1,0 +1,15 @@
+{
+  "name": "android-modules",
+  "description": "Build modules related to the Android operating system.",
+  "type": "module",
+  "provides": {
+    "package-module-android-application": {
+      "description": "Android application package module.",
+      "subdirectory": "management/package-module-android-application",
+      "steps": [
+        "directory ./ services/cfbs/modules/package-module-android-application/",
+        "policy_files services/cfbs/modules/package-module-android-application/package-module-android-application.cf"
+      ]
+    }
+  }
+}

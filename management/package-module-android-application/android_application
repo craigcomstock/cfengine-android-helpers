@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+#set -ex
+# android application package module
+#
+# example:
+#
+# packages:
+#   "com.termux" # package name as seen in 'pm list packages'
+#     policy => "present",
+#     version => "latest",
+#     package_module => android_application,
+#     # some required options, currently only github org/project is supported
+#     options => {
+#       "github_org=termux",
+#       "github_project=termux-app",
+#       "checksum=<the checksum>" # optional, if provided, downloaded apk will be checked
+#     };
+
+# shell="" # would be possible if running as root to execute commands directly
+shell="adb shell" # needed for either usb-connected devices or devices with local tcp port adb available
+# note: if more than one device is available via `adb devices` then this won't work. TODO: option for serial number(s)
+
+get_package_data() {
+  name="${INPUT_Name?Name must be given to get-package-data}"
+  echo PackageType=repo
+  echo Name=$name
+}
+
+list_installed() {
+  arch=$($shell uname -m)
+  # seeing output of `pm` command we can limit to only user installed packages. todo: make an option to include all packages (typically a large number of system packages)
+  # -3: filter to only show third party packages                                                                                    
+  for name in $($shell pm list packages -3 | cut -d: -f2); do
+    versionName=$($shell dumpsys package "$name" | grep versionName | cut -d= -f2)
+    versionCode=$($shell dumpsys package "$name" | grep versionCode | cut -d= -f2 | cut -d' ' -f1)
+    # it seems that for some packages versionName is a commit sha (pddroidparty) so try versionCode in that case
+    case "$versionName" in
+      *\.*) version="$versionName" ;;
+      *) version="$versionCode" ;;
+    esac
+    echo "Name=$name"
+    echo "Version=$version"
+    echo "Architecture=$arch"
+  done
+}
+
+repo_install() {
+  name="${INPUT_Name?Name must be given to repo-install}"
+  # TODO: check options, promiser should be package name, e.g. com.termux
+  # promise must have options github_org and github_project currently
+  # at some point we might implement options to specify google play, f-droid
+  # currently google play and f-droid API usage is a hack
+  # TODO: investigate channel, revision flags
+#  adb install "$name" >&2
+  echo "install not yet supported"
+  exit 42
+}
+
+
+list_updates() {
+  # only promises which use the github_organization and github_project options check for updates currently
+  # does the installed list include a tag for android_application and org/project
+
+
+  true
+}
+
+remove() {
+  name="${INPUT_Name?Name must be given to remove}"
+#  adb uninstall "$name" >&2
+  # ^^ package name, not apk
+  echo "uninstall not yet supported"
+  exit 42
+}
+
+main() {
+  command=$1
+
+  # Output maybe contain backslashes, and we don't want those to end up escaping
+  # something so we use use -r with read.
+  while read -r line; do
+    # Note that line is a variable assignment, e.g.
+    # INPUT_File=syncthing
+    declare INPUT_$line
+  done
+
+
+  case $command in
+    supports-api-version)
+      echo 1
+      ;;
+    get-package-data)
+      get_package_data
+      ;;
+    list-installed)
+      list_installed
+      ;;
+    repo-install)
+      repo_install
+      ;;
+    list-updates)
+      list_updates
+      ;;
+    list-updates-local)
+      list_updates
+      ;;
+    remove)
+      remove
+      ;;
+    *)
+      echo "ErrorMessage=Invalid operation"
+  esac
+}
+
+main $1
