@@ -1,0 +1,6 @@
+body package_module android_application
+{
+  query_installed_ifelapsed => "${package_module_knowledge.query_installed_ifelapsed}";
+  query_updates_ifelapsed => "${package_module_knowledge.query_updates_ifelapsed}";
+  # interpreter => "bash!";
+}
