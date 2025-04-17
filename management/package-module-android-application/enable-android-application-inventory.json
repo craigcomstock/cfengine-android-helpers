@@ -1,0 +1,5 @@
+{
+  "vars": {
+    "def.additional_package_inventory_modules[termux]" : "android_application"
+  }
+}
