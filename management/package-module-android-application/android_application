@@ -32,7 +32,7 @@ get_package_data() {
 _package_version() {
   name="$1"
   versionName=$($shell dumpsys package "$name" | grep versionName | cut -d= -f2)
-  versionCode=$($shell dumpsys package "$name" | grep versionCode | cut -d= -f2 | cud -t' ' -f1)
+  versionCode=$($shell dumpsys package "$name" | grep versionCode | cut -d= -f2 | cut -t' ' -f1)
     # it seems that for some packages versionName is a commit sha (pddroidparty) so try versionCode in that case
   case "$versionName" in
     *\.*) version="$versionName" ;;
