@@ -60,10 +60,12 @@ repo_install() {
   github_org="${INPUT_github_organization}"
   github_project="${INPUT_github_project}"
   release_regex="${INPUT_release_regex:-.*universal.*apk}"
+  tag_template="${INPUT_tag_template:-v@VERSION@}"
+  tag=$(echo "${tag_template}" | sed "s/@VERSION@/${version}/")
   url=$(
     curl "https://api.github.com/repos/${github_org}/${github_project}/releases" 2>/dev/null | \
         jq --raw-output ".[] | \
-            select(.tag_name==\"${version}\") | \
+            select(.tag_name==\"${tag}\") | \
             .assets | \
             .[] | \
             select(.name | test(\"${release_regex}\")) | \
