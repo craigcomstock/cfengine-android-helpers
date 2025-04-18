@@ -13,7 +13,6 @@ set -ex
 #     options => {
 #       "github_org=termux",
 #       "github_project=termux-app",
-# github_token_secret_path - cf-secret encrypted to the appropriate host api access is all that is needed for most repos
 #       "checksum=<the checksum>" # optional, if provided, downloaded apk will be checked
 #     };
 
@@ -60,23 +59,14 @@ repo_install() {
   version="${INPUT_Version}"
   github_org="${INPUT_github_organization}"
   github_project="${INPUT_github_project}"
-  release_regex="${INPUT_release_regex:-.*universal.*}"
-  download_url=$(
-    curl "https://api.github.com/repos/${github_org}/${github_project}/releases" 2>/dev/null | \
-        jq ".[] | \
-            select(.tag_name==\"${version}\") | \
-            .assets | \
-            .[] | \
-            select(.name | test(\"${release_regex}\")) | \
-            .browser_download_url"
-    )
-    if [ -z "$url" ]; then
-      echo "Could not find universal release."
-      exit 1
-    fi
-    apk=$(mktemp --suffice .apk)
-    curl "$url" -O "$apk"
-    echo adb install "$apk" >&2
+  # TODO: check options, promiser should be package name, e.g. com.termux
+  # promise must have options github_org and github_project currently
+  # at some point we might implement options to specify google play, f-droid
+  # currently google play and f-droid API usage is a hack
+  # TODO: investigate channel, revision flags
+#  adb install "$name" >&2
+  echo "install not yet supported"
+  exit 42
 }
 
 
