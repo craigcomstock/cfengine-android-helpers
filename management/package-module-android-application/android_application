@@ -76,7 +76,7 @@ repo_install() {
     fi
     apk=$(mktemp --suffice .apk)
     curl "$url" -O "$apk"
-    adb install "$apk" >&2
+    echo adb install "$apk" >&2
 }
 
 
