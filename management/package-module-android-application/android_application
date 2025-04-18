@@ -59,7 +59,7 @@ repo_install() {
   version="${INPUT_Version}"
   github_org="${INPUT_github_organization}"
   github_project="${INPUT_github_project}"
-  release_regex="${INPUT_release_regex:-.*universal.*}"
+  release_regex="${INPUT_release_regex:-.*universal.*apk}"
   url=$(
     curl "https://api.github.com/repos/${github_org}/${github_project}/releases" 2>/dev/null | \
         jq --raw-output ".[] | \
