@@ -13,6 +13,7 @@ set -ex
 #     options => {
 #       "github_org=termux",
 #       "github_project=termux-app",
+# github_token_secret_path - cf-secret encrypted to the appropriate host api access is all that is needed for most repos
 #       "checksum=<the checksum>" # optional, if provided, downloaded apk will be checked
 #     };
 
@@ -59,6 +60,7 @@ repo_install() {
   version="${INPUT_Version}"
   github_org="${INPUT_github_organization}"
   github_project="${INPUT_github_project}"
+  github_token_secret_path="${INPUT_github_token_secret_path}"
   # TODO: check options, promiser should be package name, e.g. com.termux
   # promise must have options github_org and github_project currently
   # at some point we might implement options to specify google play, f-droid
