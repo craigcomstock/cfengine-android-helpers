@@ -59,14 +59,23 @@ repo_install() {
   version="${INPUT_Version}"
   github_org="${INPUT_github_organization}"
   github_project="${INPUT_github_project}"
-  # TODO: check options, promiser should be package name, e.g. com.termux
-  # promise must have options github_org and github_project currently
-  # at some point we might implement options to specify google play, f-droid
-  # currently google play and f-droid API usage is a hack
-  # TODO: investigate channel, revision flags
-#  adb install "$name" >&2
-  echo "install not yet supported"
-  exit 42
+  release_regex="${INPUT_release_regex:-.*universal.*}"
+  url=$(
+    curl "https://api.github.com/repos/${github_org}/${github_project}/releases" 2>/dev/null | \
+        jq --raw-output ".[] | \
+            select(.tag_name==\"${version}\") | \
+            .assets | \
+            .[] | \
+            select(.name | test(\"${release_regex}\")) | \
+            .browser_download_url"
+    )
+    if [ -z "$url" ]; then
+      echo "Could not find release."
+      exit 1
+    fi
+    apk=$(mktemp --suffix .apk)
+    curl --location "$url" -o "$apk"
+    adb install "$apk" >&2
 }
 
 
@@ -95,8 +104,8 @@ main() {
   while read -r line; do
     # Note that line is a variable assignment, e.g.
     # INPUT_File=syncthing
-    if [ ${line:0:7} = "option=" ]; then
-      option=${line#option=}
+    if [ ${line:0:8} = "options=" ]; then
+      option=${line#options=}
       declare INPUT_$option
     else
       declare INPUT_$line
